@@ -1,18 +1,34 @@
 import { useState } from "react";
+import { sendMessage } from "../api/greenApi";
 
-function ChatWindow({ phone, onBack }) {
+function ChatWindow({ authData, phone, onBack }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
+    const [isSending, setIsSending] = useState(false);
+    const [error, setError] = useState(null);
 
-    const handleSendMessage = (e) => {
+    const handleSendMessage = async (e) => {
         e.preventDefault();
+
         const newMessageText = newMessage.trim();
         if (newMessageText === "") return;
-        setMessages((prevMessages) => [
-            ...prevMessages,
-            { id: crypto.randomUUID(), text: newMessageText, fromMe: true },
-        ]);
-        setNewMessage("");
+
+        setIsSending(true);
+        setError(null);
+
+        try{
+            await sendMessage({ ...authData, phone, message: newMessageText });
+            setMessages((prevMessages) => [
+                ...prevMessages,
+                { id: crypto.randomUUID(), text: newMessageText, fromMe: true },
+            ]);
+            setNewMessage("");
+        } catch (err){
+            console.error("Ошибка при отправке сообщения:", err);
+            setError("Ошибка при отправке сообщения");
+        } finally {
+            setIsSending(false);
+        }
     }
 
     return (
@@ -37,7 +53,8 @@ function ChatWindow({ phone, onBack }) {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <button type="submit">Отправить</button>
+                {error && <p className="form-error">{error}</p>}
+                <button disabled={isSending} type="submit">Отправить</button>
             </form>
         </div>
     );

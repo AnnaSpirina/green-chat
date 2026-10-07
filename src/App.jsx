@@ -33,7 +33,7 @@ function App() {
       {authData ? (
         <div>
           {chatPhone ? (
-            <ChatWindow phone={chatPhone} onBack={() => setChatPhone("")} />
+            <ChatWindow authData={authData} phone={chatPhone} onBack={() => setChatPhone("")} />
           ) : (
             <NewChatForm onCreateChat={(phone) => setChatPhone(phone)} />
           )}
