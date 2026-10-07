@@ -2,6 +2,7 @@ import './App.css';
 import { useState } from 'react';
 import LoginForm from './components/LoginForm';
 import NewChatForm from './components/NewChatForm';
+import ChatWindow from './components/ChatWindow';
 
 function App() {
   const [authData, setAuthData] = useState(() => {
@@ -32,9 +33,7 @@ function App() {
       {authData ? (
         <div>
           {chatPhone ? (
-            <div>
-              <h2>Чат с номером: {chatPhone}</h2>
-            </div>
+            <ChatWindow phone={chatPhone} onBack={() => setChatPhone("")} />
           ) : (
             <NewChatForm onCreateChat={(phone) => setChatPhone(phone)} />
           )}
