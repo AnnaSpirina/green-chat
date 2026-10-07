@@ -1,11 +1,46 @@
-import { useState } from "react";
-import { sendMessage } from "../api/greenApi";
+import { useState, useEffect } from "react";
+import { sendMessage, receiveNotification, deleteNotification } from "../api/greenApi";
 
 function ChatWindow({ authData, phone, onBack }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let isCancelled = false;
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const runLoop = async () => {
+            while (!isCancelled) {
+                try {
+                    const notification = await receiveNotification(authData);
+
+                    if (notification === null) continue;
+
+                    if (isCancelled) break;
+
+                    console.log("Уведомление:", notification);
+
+                    await deleteNotification({
+                        ...authData,
+                        receiptId: notification.receiptId,
+                    });
+                } catch (err) {
+                    if (isCancelled) break;
+                    console.error("Ошибка в цикле получения уведомлений:", err);
+                    await sleep(3000);
+                }
+            }
+        }
+        runLoop();
+
+        return () => {
+            isCancelled = true;
+        };
+    }, [authData]);
+
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
