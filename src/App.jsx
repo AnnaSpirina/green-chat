@@ -1,6 +1,7 @@
 import './App.css';
 import { useState } from 'react';
 import LoginForm from './components/LoginForm';
+import NewChatForm from './components/NewChatForm';
 
 function App() {
   const [authData, setAuthData] = useState(() => {
@@ -12,6 +13,7 @@ function App() {
       return null;
     }
   });
+  const [chatPhone, setChatPhone] = useState("");
 
   const handleLogin = (idInstance, apiTokenInstance) => {
     const authDataObject = { idInstance, apiTokenInstance };
@@ -21,6 +23,7 @@ function App() {
 
   const handleLogout = () => {
     setAuthData(null);
+    setChatPhone("");
     localStorage.removeItem('authData');
   };
 
@@ -28,7 +31,13 @@ function App() {
     <>
       {authData ? (
         <div>
-          Вы вошли
+          {chatPhone ? (
+            <div>
+              <h2>Чат с номером: {chatPhone}</h2>
+            </div>
+          ) : (
+            <NewChatForm onCreateChat={(phone) => setChatPhone(phone)} />
+          )}
           <button onClick={handleLogout}>Выйти</button>
         </div>
         ) : (
