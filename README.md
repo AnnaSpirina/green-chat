@@ -2,6 +2,8 @@
 
 Веб-чат на React для отправки и получения текстовых сообщений в Telegram через [GREEN-API](https://green-api.com/telegram). Интерфейс сделан по мотивам [web.max.ru](https://web.max.ru): слева список чатов, справа переписка.
 
+Демо: [https://green-chat-nu.vercel.app/](https://green-chat-nu.vercel.app/)
+
 ## Возможности
 
 - Вход по учётным данным инстанса GREEN-API (`idInstance`, `apiTokenInstance`)
