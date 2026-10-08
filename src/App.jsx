@@ -66,28 +66,34 @@ function App() {
   const activeChat = chats.find((chat) => chat.phone === chatPhone);
 
   return (
-    <>
+    <div className="page">
       {authData ? (
-        <div>
-          <ChatList chats={chats} activePhone={chatPhone} onSelect={setChatPhone} />
-          <NewChatForm onCreateChat={handleCreateChat} />
-          {chatPhone ? (
-            <ChatWindow
-              phone={chatPhone}
-              messages={activeChat ? activeChat.messages : []}
-              onSend={handleSend}
-              key={chatPhone}
-            />
-          ) : (
-            <p>Выберите или создайте чат</p>
-          )}
-          <button onClick={handleLogout}>Выйти</button>
+        <div className='chats'>
+          <div className='left-panel'>
+            <button className="button-white" onClick={handleLogout}>Выйти</button>
+            <NewChatForm onCreateChat={handleCreateChat} />
+            {chats.length > 0 && (
+              <ChatList chats={chats} activePhone={chatPhone} onSelect={setChatPhone} />
+            )}
+          </div>
+          <div className='right-panel'>
+            {chatPhone ? (
+              <ChatWindow
+                phone={chatPhone}
+                messages={activeChat ? activeChat.messages : []}
+                onSend={handleSend}
+                key={chatPhone}
+              />
+            ) : (
+              <p className='empty-text'>Выберите или создайте чат</p>
+            )}
+          </div>
         </div>
         ) : (
           <LoginForm onLogin={handleLogin} />
         )
       }
-    </>
+    </div>
   )
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { validatePhone } from "../utils/phoneUtils";
+import './NewChatForm.css';
 
 function NewChatForm({ onCreateChat }) {
     const [phone, setPhone] = useState("");
@@ -21,27 +22,24 @@ function NewChatForm({ onCreateChat }) {
     };
 
     return (
-        <div className="new-chat-form">
-            <h2>Создать новый чат</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="phone">Номер телефона</label>
-                    <input
-                        value={phone}
-                        onChange={(e) => {
-                            setPhone(e.target.value); 
-                            setError("")}
-                        }
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        required
-                    />
-                    {error && <p className="form-error">{error}</p>}
-                </div>
-                <button type="submit">Создать чат</button>
-            </form>
-        </div>
+        <form onSubmit={handleSubmit} className="new-chat-form">
+            <div className="form-group">
+                <label htmlFor="phone">Номер телефона</label>
+                <input
+                    value={phone}
+                    onChange={(e) => {
+                        setPhone(e.target.value); 
+                        setError("")}
+                    }
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    required
+                />
+                {error && <p className="form-error">{error}</p>}
+            </div>
+            <button type="submit" className="button-blue">Начать диалог</button>
+        </form>
     );
 }
 

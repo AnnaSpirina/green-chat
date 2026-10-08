@@ -1,0 +1,33 @@
+.chats{
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  height: 100vh;
+}
+
+.left-panel{
+  background: var(--background1);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
+  border-right: 1px solid var(--background2);
+}
+
+.right-panel{
+  height: 100vh;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.empty-text{
+  text-align: center;
+  font-size: 16px;
+  line-height: 22px;
+  background: linear-gradient(180deg, #ffffffa3, #ffffffe0);
+  backdrop-filter: blur(25px);
+  padding: 40px;
+  border-radius: 30px;
+}

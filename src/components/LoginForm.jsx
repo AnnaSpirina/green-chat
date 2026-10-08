@@ -1,4 +1,5 @@
 import { useState } from "react";
+import './LoginForm.css';
 
 function LoginForm({ onLogin }) {
     const [idInstance, setIdInstance] = useState("");
@@ -14,34 +15,34 @@ function LoginForm({ onLogin }) {
     };
 
     return (
-        <div className="login-form">
-            <h2>Авторизация</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                    <label htmlFor="idInstance">idInstance</label>
-                    <input
-                        value={idInstance}
-                        onChange={(e) => setIdInstance(e.target.value)}
-                        type="text"
-                        id="idInstance"
-                        name="idInstance"
-                        required
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="apiTokenInstance">apiTokenInstance</label>
-                    <input 
-                        value={apiTokenInstance} 
-                        onChange={(e) => setApiTokenInstance(e.target.value)} 
-                        type="password" 
-                        id="apiTokenInstance" 
-                        name="apiTokenInstance" 
-                        required 
-                    />
-                </div>
-                <button type="submit">Войти</button>
-            </form>
-        </div>
+        <form onSubmit={handleSubmit} className="login-form">
+            <h1 className="login-form-title">Авторизация</h1>
+            <div className="form-group">
+                <label htmlFor="idInstance">idInstance</label>
+                <input
+                    value={idInstance}
+                    onChange={(e) => setIdInstance(e.target.value)}
+                    type="text"
+                    id="idInstance"
+                    name="idInstance"
+                    autoComplete="off"
+                    required
+                />
+            </div>
+            <div className="form-group">
+                <label htmlFor="apiTokenInstance">apiTokenInstance</label>
+                <input 
+                    value={apiTokenInstance} 
+                    onChange={(e) => setApiTokenInstance(e.target.value)} 
+                    type="password" 
+                    id="apiTokenInstance" 
+                    name="apiTokenInstance" 
+                    autoComplete="new-password"
+                    required 
+                />
+            </div>
+            <button type="submit" className="button-blue">Войти</button>
+        </form>
     );
 }
 
