@@ -1,16 +1,47 @@
-# React + Vite
+# Green Chat
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Веб-чат на React для отправки и получения текстовых сообщений в Telegram через [GREEN-API](https://green-api.com/telegram). Интерфейс сделан по мотивам [web.max.ru](https://web.max.ru): слева список чатов, справа переписка.
 
-Currently, two official plugins are available:
+## Возможности
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Вход по учётным данным инстанса GREEN-API (`idInstance`, `apiTokenInstance`)
+- Сохранение учётных данных в `localStorage`, выход из аккаунта
+- Создание чата по номеру телефона: номер приводится к единому виду (`+7 (999) 123-45-67` и `89991234567` приводятся к `79991234567`)
+- Отправка текстовых сообщений методом [`sendMessage`](https://green-api.com/telegram/docs/api/sending/SendMessage/)
+- Получение входящих сообщений через [HTTP API](https://green-api.com/telegram/docs/api/receiving/technology-http-api/) (`receiveNotification` / `deleteNotification`)
+- Список чатов: чат с последним сообщением поднимается наверх, входящее от нового собеседника автоматически создаёт чат
+- Многострочные сообщения: Enter отправляет, Shift+Enter переносит строку
 
-## React Compiler
+## Стек
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- React 19 (функциональные компоненты, хуки `useState`, `useEffect`, `useRef`, `useCallback`, кастомный хук `useIncomingMessages`)
+- Fetch API, вынесенный в отдельный модуль `api/greenApi.js`
+- CSS, CSS-переменные, Flexbox и Grid
+- Vite
 
-## Expanding the ESLint configuration
+## Запуск проекта локально
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Зарегистрируйтесь на [green-api.com](https://green-api.com/telegram), создайте инстанс для Telegram и авторизуйте его через свой Telegram-аккаунт.
+2. В настройках инстанса включите получение уведомлений о входящих сообщениях.
+3. Скопируйте из личного кабинета `idInstance` и `apiTokenInstance`, они понадобятся для входа в чат.
+4. Установите зависимости и запустите проект:
+
+```
+npm install
+npm run dev
+```
+
+Приложение откроется на [http://localhost:5173](http://localhost:5173).
+
+## Сборка
+
+```
+npm run build
+```
+
+## Ограничения
+
+- Поддерживаются только российские номера (11 цифр, начинаются с 7)
+- Отправляются и отображаются только текстовые сообщения
+- История переписки хранится в памяти и пропадает после перезагрузки страницы
+- Выполнена только декстопная версия приложения
