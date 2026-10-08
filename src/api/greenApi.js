@@ -1,9 +1,10 @@
 import { API_BASE_URL} from "../utils/constants";
+import { toChatId } from "../utils/phoneUtils";
 
 export function sendMessage({ idInstance, apiTokenInstance, phone, message }) {
     return request(idInstance, apiTokenInstance, "sendMessage", {
         method: "POST",
-        body: { chatId: `${phone}@c.us`, message }
+        body: { chatId: toChatId(phone), message }
     });
 }
 

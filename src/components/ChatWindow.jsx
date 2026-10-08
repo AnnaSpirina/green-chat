@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sendMessage, receiveNotification, deleteNotification } from "../api/greenApi";
 
 function ChatWindow({ authData, phone, onBack }) {
@@ -6,6 +6,7 @@ function ChatWindow({ authData, phone, onBack }) {
     const [newMessage, setNewMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState(null);
+    const seenIdsRef = useRef(new Set());
 
     useEffect(() => {
         let isCancelled = false;
@@ -18,15 +19,30 @@ function ChatWindow({ authData, phone, onBack }) {
                     const notification = await receiveNotification(authData);
 
                     if (notification === null) continue;
-
                     if (isCancelled) break;
 
-                    console.log("Уведомление:", notification);
+                    const { receiptId, body } = notification;
 
-                    await deleteNotification({
-                        ...authData,
-                        receiptId: notification.receiptId,
-                    });
+                    if (body?.typeWebhook === "incomingMessageReceived") {
+                        const senderPhoneNumber = body?.senderData?.senderPhoneNumber;
+                        const typeMessage = body?.messageData?.typeMessage;
+                        const text = body?.messageData?.textMessageData?.textMessage;
+                        const idMessage = body?.idMessage;
+
+                        const isText = typeMessage === "textMessage";
+                        const isFromThisChat = String(senderPhoneNumber) === phone;
+                        const isNotSeen = idMessage && !seenIdsRef.current.has(idMessage);
+
+                        if (isText && isFromThisChat && isNotSeen) {
+                            seenIdsRef.current.add(idMessage);
+                            setMessages((prev) => [
+                                ...prev,
+                                { id: idMessage, text, fromMe: false },
+                            ]);
+                        }
+                    }
+
+                    await deleteNotification({ ...authData, receiptId });
                 } catch (err) {
                     if (isCancelled) break;
                     console.error("Ошибка в цикле получения уведомлений:", err);
@@ -39,7 +55,7 @@ function ChatWindow({ authData, phone, onBack }) {
         return () => {
             isCancelled = true;
         };
-    }, [authData]);
+    }, [authData, phone]);
 
 
     const handleSendMessage = async (e) => {

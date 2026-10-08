@@ -1,3 +1,5 @@
+export const toChatId = (phone) => `${phone}@c.us`;
+
 export function normalizePhone(raw) {
     let digits = raw.replace(/\D/g, "");
 
