@@ -1,62 +1,9 @@
-import { useState, useEffect, useRef } from "react";
-import { sendMessage, receiveNotification, deleteNotification } from "../api/greenApi";
+import { useState } from "react";
 
-function ChatWindow({ authData, phone, onBack }) {
-    const [messages, setMessages] = useState([]);
+function ChatWindow({ phone, messages, onSend }) {
     const [newMessage, setNewMessage] = useState("");
     const [isSending, setIsSending] = useState(false);
     const [error, setError] = useState(null);
-    const seenIdsRef = useRef(new Set());
-
-    useEffect(() => {
-        let isCancelled = false;
-
-        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-        const runLoop = async () => {
-            while (!isCancelled) {
-                try {
-                    const notification = await receiveNotification(authData);
-
-                    if (notification === null) continue;
-                    if (isCancelled) break;
-
-                    const { receiptId, body } = notification;
-
-                    if (body?.typeWebhook === "incomingMessageReceived") {
-                        const senderPhoneNumber = body?.senderData?.senderPhoneNumber;
-                        const typeMessage = body?.messageData?.typeMessage;
-                        const text = body?.messageData?.textMessageData?.textMessage;
-                        const idMessage = body?.idMessage;
-
-                        const isText = typeMessage === "textMessage";
-                        const isFromThisChat = String(senderPhoneNumber) === phone;
-                        const isNotSeen = idMessage && !seenIdsRef.current.has(idMessage);
-
-                        if (isText && isFromThisChat && isNotSeen) {
-                            seenIdsRef.current.add(idMessage);
-                            setMessages((prev) => [
-                                ...prev,
-                                { id: idMessage, text, fromMe: false },
-                            ]);
-                        }
-                    }
-
-                    await deleteNotification({ ...authData, receiptId });
-                } catch (err) {
-                    if (isCancelled) break;
-                    console.error("Ошибка в цикле получения уведомлений:", err);
-                    await sleep(3000);
-                }
-            }
-        }
-        runLoop();
-
-        return () => {
-            isCancelled = true;
-        };
-    }, [authData, phone]);
-
 
     const handleSendMessage = async (e) => {
         e.preventDefault();
@@ -68,11 +15,7 @@ function ChatWindow({ authData, phone, onBack }) {
         setError(null);
 
         try{
-            await sendMessage({ ...authData, phone, message: newMessageText });
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { id: crypto.randomUUID(), text: newMessageText, fromMe: true },
-            ]);
+            await onSend(newMessageText);
             setNewMessage("");
         } catch (err){
             console.error("Ошибка при отправке сообщения:", err);
@@ -84,7 +27,6 @@ function ChatWindow({ authData, phone, onBack }) {
 
     return (
         <div className="chat-window">
-            <button onClick={onBack}>Назад</button>
             <h2>Чат с номером: {phone}</h2>
             {
                 messages.length === 0 ? (
@@ -98,9 +40,9 @@ function ChatWindow({ authData, phone, onBack }) {
                 )
             }
             <form onSubmit={handleSendMessage}>
-                <input 
-                    type="text" 
-                    placeholder="Введите сообщение..." 
+                <input
+                    type="text"
+                    placeholder="Введите сообщение..."
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                 />
